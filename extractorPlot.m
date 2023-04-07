@@ -27,7 +27,7 @@ function extractorPlot(v, sol, SA, t)
     % plot equilibrium curve from from getEqFun
     plot(s.abs2rel(s.aq), s.abs2rel(s.org), '-k');
     %GRAYSCALE plot(s.abs2rel(s.aq), s.abs2rel(s.org), '-.k');
-    axis([0 inf 0 inf]);
+    axis([0 s.WF*1.2 0 s.UE*1.2]);
 
     % plot all theoretical plates
     xPlot = zeros(1, 2*6-1); yPlot = xPlot;

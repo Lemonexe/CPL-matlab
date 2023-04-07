@@ -10,10 +10,13 @@
 %              that is the variable which will be calculated from mass balance
 %       sol = organic solvent = 'TOL', 'TCE'
 %       SA = content of ammonium sulphate % = 30, 35, 40
-%       t = temperature in �C, should be between 30 and 60, but extrapolation beyond these bounds is possible
+%       t = temperature in °C, should be between 30 and 60, but extrapolation beyond these bounds is possible
 %
 %CALL EXAMPLE:
-%       extractor([100, 10, 0.01, 0.001, 0, NaN], 'TOL', 40, 60)
+%       extractorPlot([6.29, 3.86, 7.25E-03, 5.20E-05, 0.0, NaN], 'CHX', 40, 57.4)
+%       extractorPlot([5.59, 2.55, 7.25E-03, 3.93E-05, 0.0, NaN], 'CHX', 40, 57.4)
+%       extractorPlot([5.57, 1.47, 7.25E-03, 3.87E-04, 0.0, NaN], 'CHX', 40, 60.0)
+%       extractorPlot([5.36, 1.66, 7.25E-03, 2.82E-04, 0.0, NaN], 'CHX', 40, 60.0)
 
 function s = extractor(v, sol, SA, t)
     % s = structured array with everything - state data & results
@@ -33,9 +36,20 @@ function s = extractor(v, sol, SA, t)
     %}
     s = balance(s);
     checkConstraints(s);
-    [s.aq, s.org] = getEqFun(s.sol, s.SA, s.t);
+    [s.aq, s.org] = getEqFunCHX(s.t);
+
     s = minFlow(s);
     s = McCabeThiele(s);
+end
+
+function varargout = getEqFunCHX(t)
+    k = 4.018213828;
+    q = -83.24206547;
+    KD = k*t + q;
+    maxAq = 0.6e-2; % because omg, the KD is so very high with CHX+CHXOL that wOrg → 1, WOrg → singularity, that leads to resonance cascade → the calculation breaks
+    aq = linspace(0, maxAq , 100)';
+    org = linspace(0, maxAq*KD , 100)';
+    varargout = {aq, org};
 end
 
 % perform initial mass balance
